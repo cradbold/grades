@@ -16,8 +16,9 @@ To start the existing code in the grades repo:
 ```
 > npm install
 > grunt dbseed
-> node app/gc.js& (I haven't integrated your full grunt work yet... I plan on pulling parts of it over at least!)
+> node app/gc.js
 ```
+I haven't integrated your full grunt work yet... I plan on pulling parts of it over at least!
 
 Summary
 -------
