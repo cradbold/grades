@@ -3,8 +3,21 @@ grades
 
 Information
 -----------
-Please host all code in the following public github account using the code structure that already exists there: https://github.com/cradbold/grades
-Please communicate with me either by google hangout/chat or email: cradbold@gmail.com
+* Please host all code in the following public github account using the code structure that already exists there: https://github.com/cradbold/grades
+* Please communicate with me either by google hangout/chat or email: cradbold@gmail.com
+* Please spend 4 hours on this feature as described below.  If you finish under 4 hours, increase the quality of code for the remaining time.
+* Please use Node, Backbone, Express (router), JQuery, Socket.io, MongoDB -- all Javascript
+* Please do not use Backbone router, a view manager, or anything that further complicates the existing directory structure -- that would help greatly.
+* Please use CDN URLs for CSS and JS resources whenever possible; examples already exist in main.js
+
+Quick start
+-----------
+To start the existing code in the grades repo:
+```
+> npm install
+> grunt dbseed
+> node app/gc.js& (I haven't integrated your full grunt work yet... I plan on pulling parts of it over at least!)
+```
 
 Summary
 -------

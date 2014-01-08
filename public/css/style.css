@@ -1,0 +1,23 @@
+body {
+  	padding: 50px;
+  	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  	color: #00B7FF;
+}
+
+label.valid {
+	width: 24px;
+	height: 24px;
+	background: url(../img/valid.png) center center no-repeat;
+	display: inline-block;
+	text-indent: -9999px;
+}
+
+label.error {
+	font-weight: bold;
+	color: red;
+	padding: 2px 8px;
+	margin-top: 2px;
+}
