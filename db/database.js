@@ -21,7 +21,18 @@ var UserSchema = new mongoose.Schema({
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true},
 	student: { type: Boolean, required: true },
-	tutor: { type: Boolean, required: true }
+	tutor: { type: Boolean, required: true },
+	tutorStudents: [],
+	grades: [], 
+});
+
+var GradeSchema = new mongoose.Schema({
+	date: { type: String, required: true },
+	type: { type: String, required: true },
+	continent: { type: String, required: true },
+	country: { type: String, required: true },
+	state: { type: String, required: true },
+	city: { type: String, required: true },
 });
 
  //bcrypt

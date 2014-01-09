@@ -5,6 +5,19 @@
 </head>
 <body>
 	<% include navbar %>
+
+	<div class="container" id="js-grade-list">
+		<h1>Grades</h1>
+		<hr>
+		<div class="row" >
+			<div class="col-md-12">
+				<select name="student" class="form-control">
+					<option vlaue="">--Students--</option>
+				</select>
+			</div>
+		</div>		
+	</div>
+
 	GRADES!!
 	<% if (user.owner) { %>
 		<p>OWNER</p>
@@ -15,6 +28,142 @@
 	<% if (user.tutor) { %>
 		<p>TUTOR</p>
 	<% } %>
+
+<script type="text/javascript">
+
+window.onload = function() {
+	
+	require(['jQuery', 'Backbone'], function($, Backbone) { 
+
+		var gradeView = Backbone.View.extend({
+			
+			render: function() {
+
+				// console.log(this.collection);
+
+				this.$el = $('#js-teacher-list');
+				var mails = this.$('.js-teacher-lists');
+				mails.html('');
+
+				this.collection.forEach(function(mail) {
+
+					console.log(mail.attributes._id);
+
+					// var view = new liveItemView({
+					// 	model: mail
+					// });
+					
+					// mails.append(view.render().$el);
+
+				}, this);
+
+				return this;
+
+				// $.ajax({
+				// 	type: "GET",
+				// 	url: "/getStudents"
+				// })
+				// .done(function( msg ) {
+
+				// 	if(msg.length !== 0) {
+				// 		self.$('select[name="student"]').append('<option value="' + model.get('id') + '">' + model.get('name') + '</option>');
+				// 	}
+
+				// 	console.log(msg);
+				// 	// alert( "Data Saved: " + msg );
+				// });
+
+				// this.$el = $('#js-grade-list');
+				// self.$('select[name="student"]').hide();
+
+				// this.$el = $('#js-teacher-list');
+				// var mails = this.$('.js-teacher-lists');
+				// mails.html('');
+				// this.collection.forEach(function(mail) {
+				// 	var view = new liveItemView({
+				// 		model: mail
+				// 	});					
+				// 	mails.append(view.render().$el);
+				// }, this);
+
+				alert("sdf");
+
+				return this;
+			}
+		});
+
+		// --
+
+		var studentsModel = Backbone.Model.extend({
+			urlRoot: '/api/v0.1/getStudents',
+			url: '/api/v0.1/getStudents',
+		});
+
+	    var studentsCollection = Backbone.Collection.extend({        
+	        url: '/api/v0.1/getStudents',        
+	        model : studentsModel,
+	        read:function() { }
+	    });
+
+	    var _studentsCollection = new studentsCollection();
+		var _gradeView = null;
+		_studentsCollection.fetch({
+			success: function(students) {
+				console.log(students);
+				_gradeView = new gradeView({ $el : $('#js-grade-list'), collection: students});
+				_gradeView.render();
+			}
+		});
+		
+		// var studentView = Backbone.View.extend({
+
+		// 	var self = this;
+			
+		// 	render: function() {				
+
+		// 		$.ajax({
+		// 			type: "GET",
+		// 			url: "/getStudents"
+		// 		})
+		// 		.done(function( msg ) {
+
+		// 			if(msg.length !== 0) {
+		// 				self.$('select[name="student"]').append('<option value="' + model.get('id') + '">' + model.get('name') + '</option>');
+		// 			}
+					
+		// 			console.log(msg);
+		// 			// alert( "Data Saved: " + msg );
+		// 		});
+
+		// 		this.$el = $('#js-grade-list');
+		// 		self.$('select[name="student"]').hide();
+
+		// 		// this.$el = $('#js-teacher-list');
+		// 		// var mails = this.$('.js-teacher-lists');
+		// 		// mails.html('');
+		// 		// this.collection.forEach(function(mail) {
+		// 		// 	var view = new liveItemView({
+		// 		// 		model: mail
+		// 		// 	});					
+		// 		// 	mails.append(view.render().$el);
+		// 		// }, this);
+
+		// 		alert("sdf");
+
+		// 		return this;
+		// 	}
+		// });
+
+		// --
+
+		// var	_gradeView = new gradeView({ $el : $('#js-grade-list')});
+		// 	_gradeView.render();
+	});
+
+}
+
+</script>
+
 </body>
 <% include footer %>
 </html>

@@ -1,17 +1,18 @@
 module.exports = function(gc) {
-	
+
 	var api = "/api";
 	var version = '/v0.1';
 	var prefix = api + version;
-		
+	var db = require('../db/database');
+
 	gc.get(api, function(req, res) {
-	    res.send('GC API is up and running -- append a version...\n');
+		res.send('GC API is up and running -- append a version...\n');
 	});
-	
+
 	gc.get(prefix, function(req, res) {
-	    res.send('GC ' + version + ' API is up and running...\n');
+		res.send('GC ' + version + ' API is up and running...\n');
 	});
-	
+
 	gc.get(prefix + '/meeting', function(req, res) {
 		if (!req.user || req.user.userType != 'teacher') {
 			res.send([]);
@@ -112,7 +113,7 @@ module.exports = function(gc) {
 	gc.get(prefix + '/live-teachers', function(req, res) {
 		res.json(require(__dirname + '/site').getLiveTeachers() || []);
 	});
-	
+
 	gc.post('/teacher/availability/:action', function(req, res) {
 		if (req.user.tutor) {
 			if (req.params['action'] == 'true') {
@@ -127,4 +128,57 @@ module.exports = function(gc) {
 			res.status(404, 'Page not found!');
 		}
 	});
+
+	gc.get(prefix + '/getStudents', function(req, res) {
+		if (!req.user) {
+			res.send([]);
+			return;
+		}
+		var getUser = function(cb) {
+			var userId = req.user['_id'];
+			db.UserModel.find({
+				_id: userId
+			}).exec(function(err, data) {
+				if (err) {
+					console.log(err);
+				}
+				cb(null, data);
+			});
+		}
+		var getStudents = function(data, cb) {
+
+			db.UserModel.find({
+				_id: {
+					$in: data[0].tutorStudents
+				}
+			}, {
+				_id: true,
+				firstName: true,
+				lastName: true,
+			}).exec(function(err, sData) {
+				if (err) {
+					console.log(err);
+				}
+
+				var studData = [];
+
+				for (var ke in sData) {
+					studData[studData.length] = {
+						_id: sData[ke]._id,
+						name: sData[ke].firstName + ' ' + sData[ke].lastName,
+					}
+				}
+				res.json(studData);
+			});
+
+		}
+
+		getUser(function(err, data) {
+			getStudents(data, function(err, data) {
+				res.json(data);
+			});
+		});
+	});
+
+
 };
