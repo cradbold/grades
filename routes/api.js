@@ -129,6 +129,65 @@ module.exports = function(gc) {
 		}
 	});
 
+
+
+	// ---------------------------------------------------
+
+	/**
+	 * Grade feature
+	 */
+
+	gc.get(prefix + '/getStudents', function(req, res) {
+		if (!req.user) {
+			res.send([]);
+			return;
+		}
+		var getUser = function(cb) {
+			var userId = req.user['_id'];
+			db.UserModel.find({
+				_id: userId
+			}).exec(function(err, data) {
+				if (err) {
+					console.log(err);
+				}
+				cb(null, data);
+			});
+		}
+		var getStudents = function(data, cb) {
+
+			db.UserModel.find({
+				_id: {
+					$in: data[0].tutorStudents
+				}
+			}, {
+				_id: true,
+				firstName: true,
+				lastName: true,
+			}).exec(function(err, sData) {
+				if (err) {
+					console.log(err);
+				}
+
+				var studData = [];
+
+				for (var ke in sData) {
+					studData[studData.length] = {
+						_id: sData[ke]._id,
+						name: sData[ke].firstName + ' ' + sData[ke].lastName,
+					}
+				}
+				res.json(studData);
+			});
+
+		}
+
+		getUser(function(err, data) {
+			getStudents(data, function(err, data) {
+				res.json(data);
+			});
+		});
+	});
+
 	gc.get(prefix + '/getStudents', function(req, res) {
 		if (!req.user) {
 			res.send([]);

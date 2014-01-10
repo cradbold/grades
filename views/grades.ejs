@@ -4,94 +4,134 @@
 	<% include header %>
 </head>
 <body>
-	<% include navbar %>
 
-	<div class="container" id="js-grade-list">
-		<h1>Grades</h1>
-		<hr>
-		<div class="row" >
-			<div class="col-md-12">
-				<select name="student" class="form-control">
-					<option vlaue="">--Students--</option>
-				</select>
-			</div>
-		</div>		
+<% include navbar %>
+
+<div class="container" id="js-grade-list">
+	<h1>Grades</h1>
+	<hr>
+	<div class="row" >
+	 	<div class="col-md-6">
+			<select name="student" class="form-control js-student-list">
+				<option vlaue="">--Students--</option>
+			</select>
+		</div>
 	</div>
+	<div class="row">
+	 	<div class="col-md-6">
+			<button class="btn btn-large btn-info js-add-grade"> Add Grade </button>
+		</div>
+	</div>
+</div>
 
-	GRADES!!
-	<% if (user.owner) { %>
-		<p>OWNER</p>
-	<% } %>
-	<% if (user.student) { %>
-		<p>STUDENT</p>
-	<% } %>
-	<% if (user.tutor) { %>
-		<p>TUTOR</p>
-	<% } %>
+
+<!-- Grade Create Model -->
+
+<div class="modal fade" id="grade-model">
+	<form role="form">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Add Grade</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input type="text" class="form-control" id="name" placeholder="Enter Name" required>
+					</div>
+					<div class="form-group">
+						<label for="date">Date</label>
+						<input type="text" class="form-control" id="date" placeholder="Enter Date" required>
+					</div>
+					<div class="form-group">
+						<label for="type">Type</label>
+						<select name="student" class="form-control js-student-list" required id="type">
+							<option vlaue="">--Type--</option>
+							<option vlaue="diagnostic">Diagnostic</option>
+							<option vlaue="homework">Homework</option>
+							<option vlaue="session">Session</option>
+							<option vlaue="test">Test</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="continent">Continent</label>
+						<select name="student" class="form-control js-student-list" id="continent" required>
+							<option vlaue="">--Continent--</option>
+							<option vlaue="north-america">north america</option>
+							<option vlaue="south-america">south america</option>
+							<option vlaue="asia">asia</option>
+							<option vlaue="europe">europe</option>
+							<option vlaue="africa">africa</option>
+							<option vlaue="oceania">oceania</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">Country</label>
+						<select name="student" class="form-control js-student-list" required>
+							<option vlaue="">--country--</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="state">State</label>
+						<select name="student" class="form-control js-student-list" id="state" required>
+							<option vlaue="">--state--</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="city">City</label>
+						<select name="student" class="form-control js-student-list" id="city" required>
+							<option vlaue="">--city--</option>
+						</select>
+					</div>				
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<input type="submit" name="submit" value="Save changes" class="btn btn-primary">
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+
+
 
 <script type="text/javascript">
 
 window.onload = function() {
 	
-	require(['jQuery', 'Backbone'], function($, Backbone) { 
+	require(['jQuery', 'bootstrap', 'Backbone'], function($, bt, Backbone) { 
 
 		var gradeView = Backbone.View.extend({
-			
+
 			render: function() {
 
-				// console.log(this.collection);
-
-				this.$el = $('#js-teacher-list');
-				var mails = this.$('.js-teacher-lists');
-				mails.html('');
-
-				this.collection.forEach(function(mail) {
-
-					console.log(mail.attributes._id);
-
-					// var view = new liveItemView({
-					// 	model: mail
-					// });
-					
-					// mails.append(view.render().$el);
-
+				this.$el = $('#js-grade-list');
+				this.collection.forEach(function(row) {
+					this.$('.js-student-list').append('<option value="' + row.get('_id') + '">' + row.get('name') + '</option>');
 				}, this);
+				this.$('.js-student-list').bind({
+					change: function() {
 
-				return this;
+					}
+				});
 
-				// $.ajax({
-				// 	type: "GET",
-				// 	url: "/getStudents"
-				// })
-				// .done(function( msg ) {
+				this.$('.js-student-list').bind({
+					change: function() {
 
-				// 	if(msg.length !== 0) {
-				// 		self.$('select[name="student"]').append('<option value="' + model.get('id') + '">' + model.get('name') + '</option>');
-				// 	}
+					}
+				});
 
-				// 	console.log(msg);
-				// 	// alert( "Data Saved: " + msg );
-				// });
-
-				// this.$el = $('#js-grade-list');
-				// self.$('select[name="student"]').hide();
-
-				// this.$el = $('#js-teacher-list');
-				// var mails = this.$('.js-teacher-lists');
-				// mails.html('');
-				// this.collection.forEach(function(mail) {
-				// 	var view = new liveItemView({
-				// 		model: mail
-				// 	});					
-				// 	mails.append(view.render().$el);
-				// }, this);
-
-				alert("sdf");
+				this.$('.js-add-grade').bind({
+					click: function() {
+						$('#grade-model').modal('show');
+					}
+				});
 
 				return this;
 			}
 		});
-
+	
 		// --
 
 		var studentsModel = Backbone.Model.extend({
@@ -99,7 +139,7 @@ window.onload = function() {
 			url: '/api/v0.1/getStudents',
 		});
 
-	    var studentsCollection = Backbone.Collection.extend({        
+	    var studentsCollection = Backbone.Collection.extend({
 	        url: '/api/v0.1/getStudents',        
 	        model : studentsModel,
 	        read:function() { }
@@ -115,55 +155,12 @@ window.onload = function() {
 			}
 		});
 		
-		// var studentView = Backbone.View.extend({
-
-		// 	var self = this;
-			
-		// 	render: function() {				
-
-		// 		$.ajax({
-		// 			type: "GET",
-		// 			url: "/getStudents"
-		// 		})
-		// 		.done(function( msg ) {
-
-		// 			if(msg.length !== 0) {
-		// 				self.$('select[name="student"]').append('<option value="' + model.get('id') + '">' + model.get('name') + '</option>');
-		// 			}
-					
-		// 			console.log(msg);
-		// 			// alert( "Data Saved: " + msg );
-		// 		});
-
-		// 		this.$el = $('#js-grade-list');
-		// 		self.$('select[name="student"]').hide();
-
-		// 		// this.$el = $('#js-teacher-list');
-		// 		// var mails = this.$('.js-teacher-lists');
-		// 		// mails.html('');
-		// 		// this.collection.forEach(function(mail) {
-		// 		// 	var view = new liveItemView({
-		// 		// 		model: mail
-		// 		// 	});					
-		// 		// 	mails.append(view.render().$el);
-		// 		// }, this);
-
-		// 		alert("sdf");
-
-		// 		return this;
-		// 	}
-		// });
-
-		// --
-
-		// var	_gradeView = new gradeView({ $el : $('#js-grade-list')});
-		// 	_gradeView.render();
+		
 	});
 
 }
 
 </script>
-
 </body>
 <% include footer %>
 </html>

@@ -38,5 +38,3 @@ require.config({
 		bootstrapSwitch: './lib/bootstrap-switch.min'
 	}
 });
-
-require(['jQuery', 'Backbone'], function($, B) { });
