@@ -239,5 +239,130 @@ module.exports = function(gc) {
 		});
 	});
 
+	gc.post(prefix + '/grade-post', function(req, res) {
+
+		var gradeData = new db.GradeModel({
+			name: req.body.name,
+			date: req.body.date,
+			type: req.body.type,
+			continent: req.body.continent,
+			country: req.body.country,
+			state: req.body.state,
+			city: req.body.city
+		});
+
+		gradeData.save(function(err) {
+			if (err) {
+				console.log('Error: ' + err);
+				res.send(err);
+			} else {
+
+				db.UserModel.find({
+					_id: req.body.studentID
+				}).exec(function(err, user) {
+
+
+					var existsGarde = []
+
+					if (user.length !== 0) {
+
+						if (user[0].grades.length != 0) {
+							existsGarde = user[0].grades;
+						}
+
+						existsGarde.push(gradeData._id.toString());
+
+						db.UserModel.update({
+							_id: req.body.studentID
+						}, {
+							grades: existsGarde
+						}).exec(function(err, done) {
+							console.log(done);
+						});
+					}
+				});
+				res.send("success");
+			}
+		});
+	});
+
+	gc.get(prefix + '/get-student-grade', function(req, res) {
+
+		db.UserModel.find({
+			_id: req.query['studId']
+		}).exec(function(err, student) {
+
+			db.GradeModel.find({
+				_id: {
+					$in: student[0].grades
+				}
+			}).exec(function(err, grades) {
+				res.json(grades);
+			});
+
+		});
+	});
+
+	gc.get(prefix + '/grade/:studId/delete/:id', function(req, res) {
+		db.GradeModel.remove({
+			_id: req.params.id
+		}).exec(function(err, data) {
+			db.UserModel.find({
+				_id: req.params.studId
+			}).exec(function(err, user) {
+
+				var existsGarde = []
+
+				if (user.length !== 0) {
+
+					if (user[0].grades.length != 0) {
+						existsGarde = user[0].grades;
+					}
+
+					var index = existsGarde.indexOf(req.params.id);
+					if (index > -1) {
+						existsGarde.splice(index, 1);
+					}
+
+					db.UserModel.update({
+						_id: req.params.studId
+					}, {
+						grades: existsGarde
+					}).exec(function(err, done) {
+						console.log(done);
+					});
+				}
+			});
+			res.send("success");
+		});
+	});
+
+	gc.get(prefix + '/grade/:id/edit', function(req, res) {
+		db.GradeModel.find({
+			_id: req.params.id
+		}).exec(function(err, data) {
+			res.send(data);
+		});
+	});
+
+	gc.post(prefix + '/grade/update', function(req, res) {
+		var gradeData = {
+			name: req.body.name,
+			date: req.body.date,
+			type: req.body.type,
+			continent: req.body.continent,
+			country: req.body.country,
+			state: req.body.state,
+			city: req.body.city
+		};
+
+		db.GradeModel.update({
+				_id: req.body.gradeId
+			},
+			gradeData
+		).exec(function(err, done) {
+			res.send("success");
+		});
+	});
 
 };

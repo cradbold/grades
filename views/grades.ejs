@@ -12,23 +12,28 @@
 	<hr>
 	<div class="row" >
 	 	<div class="col-md-6">
-			<select name="student" class="form-control js-student-list">
-				<option vlaue="">--Students--</option>
+			<select name="student" class="form-control js-student-list" id="studentList">
+				<option value="">--Students--</option>
 			</select>
 		</div>
 	</div>
-	<div class="row">
+
+	<br>
+	<div class="row" id="grade-list"></div>
+	<br>
+
+	<div class="row hide grade-add-cn">
 	 	<div class="col-md-6">
 			<button class="btn btn-large btn-info js-add-grade"> Add Grade </button>
 		</div>
-	</div>
+	</div>	
 </div>
 
 
 <!-- Grade Create Model -->
 
 <div class="modal fade" id="grade-model">
-	<form role="form">
+	<form role="form" id="gradeForm">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -38,56 +43,52 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label for="name">Name</label>
-						<input type="text" class="form-control" id="name" placeholder="Enter Name" required>
+						<input type="text" class="form-control" name="name" id="name" placeholder="Enter Name" required>
+						<input type="hidden" name="studentID" id="student_id">
+						<input type="hidden" name="gradeId" id="grade-edit">
 					</div>
 					<div class="form-group">
 						<label for="date">Date</label>
-						<input type="text" class="form-control" id="date" placeholder="Enter Date" required>
+						<input type="text" class="form-control" name="date" id="date" placeholder="Enter Date" required>
 					</div>
 					<div class="form-group">
 						<label for="type">Type</label>
-						<select name="student" class="form-control js-student-list" required id="type">
-							<option vlaue="">--Type--</option>
-							<option vlaue="diagnostic">Diagnostic</option>
-							<option vlaue="homework">Homework</option>
-							<option vlaue="session">Session</option>
-							<option vlaue="test">Test</option>
+						<select name="type" class="form-control js-student-list" required id="type">
+							<option value="">--Type--</option>
+							<option value="diagnostic">Diagnostic</option>
+							<option value="homework">Homework</option>
+							<option value="session">Session</option>
+							<option value="test">Test</option>
 						</select>
 					</div>
 					<div class="form-group">
 						<label for="continent">Continent</label>
-						<select name="student" class="form-control js-student-list" id="continent" required>
-							<option vlaue="">--Continent--</option>
-							<option vlaue="north-america">north america</option>
-							<option vlaue="south-america">south america</option>
-							<option vlaue="asia">asia</option>
-							<option vlaue="europe">europe</option>
-							<option vlaue="africa">africa</option>
-							<option vlaue="oceania">oceania</option>
+						<select name="continent" class="form-control js-student-list" id="continent" required>
+							<option value="">--Continent--</option>
 						</select>
 					</div>
 					<div class="form-group">
-						<label for="exampleInputPassword1">Country</label>
-						<select name="student" class="form-control js-student-list" required>
-							<option vlaue="">--country--</option>
+						<label for="country">Country</label>
+						<select name="country" class="form-control js-student-list" required id="country">
+							<option value="">--country--</option>
 						</select>
 					</div>
 					<div class="form-group">
 						<label for="state">State</label>
-						<select name="student" class="form-control js-student-list" id="state" required>
-							<option vlaue="">--state--</option>
+						<select name="state" class="form-control js-student-list" id="state" required>
+							<option value="">--state--</option>
 						</select>
 					</div>
 					<div class="form-group">
 						<label for="city">City</label>
-						<select name="student" class="form-control js-student-list" id="city" required>
-							<option vlaue="">--city--</option>
+						<select name="city" class="form-control js-student-list" id="city" required>
+							<option value="">--city--</option>
 						</select>
 					</div>				
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<input type="submit" name="submit" value="Save changes" class="btn btn-primary">
+					<input type="submit" name="submit" value="Add Grade" class="btn btn-primary btn-submit">
 				</div>
 			</div>
 		</div>
@@ -95,36 +96,141 @@
 </div>
 
 
+<!-- Grade List -->
+
+<div class="row" id="stud-data-list"></div>
 
 <script type="text/javascript">
+
+var object = [];
 
 window.onload = function() {
 	
 	require(['jQuery', 'bootstrap', 'Backbone'], function($, bt, Backbone) { 
 
+
+		// --
+		// Grade list
+
+		var studentGrade = Backbone.View.extend({
+			render: function() {
+
+				var self = this;
+				this.$el = $('#stud-data-list').clone();
+				this.$el.html('');
+				this.collection.forEach(function(stud) {
+					self.$el.append('<h2 class="well">' + stud.get('name') + ' <button class="pull-right btn grade-delete" data-id="'+stud.get('_id') +'"><span class="glyphicon glyphicon-trash"></span></button> <span class="pull-right">&nbsp;</span><button class="pull-right btn grade-edit" data-id="'+stud.get('_id') +'"><span class="glyphicon glyphicon-pencil"></span></button></h2>');
+				}, this);
+
+				this.$('.grade-delete').bind({
+					click: function() {
+						var getid = $(this).attr('data-id');
+						var studId = $('#studentList').val();
+						var action = confirm("Are you sure want to delete it?");
+						if (action == true) {
+							$.ajax({
+								url: "/api/v0.1/grade/" + studId + "/delete/" + getid,
+								success:function(data){
+									console.log(data);
+									$('#studentList').change();
+								},
+								error: function (error) {
+					                console.log(error);
+					            }
+							});
+							return false;
+						} else {
+							
+						} 
+					}
+				});
+
+				this.$('.grade-edit').bind({
+					click: function() {
+						var getid = $(this).attr('data-id');
+						$.ajax({
+							url: "/api/v0.1/grade/" + getid + "/edit",
+							success:function(data){
+								$('#grade-edit').val(data[0]._id);
+								$('#name').val(data[0].name);
+								$('#date').val(data[0].date);
+								$('#type').val(data[0].type);
+								$('#continent').val(data[0].continent);
+								$('#continent').change();
+								$('#country').val(data[0].country);
+								$('#country').change();
+								$('#state').val(data[0].state);
+								$('#state').change();
+								$('#city').val(data[0].city);
+								$('.btn-submit').val('Update Grade');
+								$('h4.modal-title').text('Update Grade');
+								$('#grade-model').modal('show');
+							},
+							error: function (error) {
+				                console.log(error);
+				            }
+						});
+						return false;
+					}
+				});
+
+				return this;
+			}
+		});		
+
 		var gradeView = Backbone.View.extend({
 
 			render: function() {
+
+				var s_gradeView = this;
 
 				this.$el = $('#js-grade-list');
 				this.collection.forEach(function(row) {
 					this.$('.js-student-list').append('<option value="' + row.get('_id') + '">' + row.get('name') + '</option>');
 				}, this);
-				this.$('.js-student-list').bind({
-					change: function() {
-
-					}
-				});
-
-				this.$('.js-student-list').bind({
-					change: function() {
-
-					}
-				});
-
 				this.$('.js-add-grade').bind({
 					click: function() {
+						$('#student_id').val($('#studentList').val());
+						$('#grade-edit').val('');
+						resetData();
+						$('.btn-submit').val('Add Grade');
+						$('h4.modal-title').text('Add Grade');
 						$('#grade-model').modal('show');
+					}
+				});
+
+				this.$('#studentList').bind({
+					change: function()  {
+						
+						if ($(this).val() != '') {
+
+							$('.grade-add-cn').removeClass('hide');
+
+							var gradeModel = Backbone.Model.extend({
+								urlRoot: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
+								url: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
+							});
+
+							var studGradeCollection = Backbone.Collection.extend({
+						        url: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
+						        model : gradeModel,
+						        read:function() { }
+						    });
+
+							var _studGradeCollection = new studGradeCollection();
+							var _gradeView = null;
+							_studGradeCollection.fetch({
+								success: function(studentGradeD) {
+									_studentGrade = new studentGrade({ $el : $('#stud-data-list'), collection: studentGradeD});
+									s_gradeView.$('#grade-list').html('');
+									s_gradeView.$('#grade-list').append(_studentGrade.render().$el);
+								}
+							});
+
+						} else {
+							$('.grade-add-cn').addClass('hide');
+						}
+
 					}
 				});
 
@@ -149,15 +255,126 @@ window.onload = function() {
 		var _gradeView = null;
 		_studentsCollection.fetch({
 			success: function(students) {
-				console.log(students);
 				_gradeView = new gradeView({ $el : $('#js-grade-list'), collection: students});
 				_gradeView.render();
 			}
 		});
-		
-		
-	});
 
+		// reset form data
+
+		var resetData = function() {
+			$('#name').val('');
+			$('#date').val('');
+			$('#type').val('');
+			$('#continent').val('');
+			$('#country').val('');
+			$('#state').val('');
+			$('#city').val('');
+		};
+
+		$('body').on('change', '#continent', function () {
+
+			$('#country').html('');
+			$('#country').append('<option value="">--country--</option>');
+
+			if ($('#continent').val() == '') {
+				$('#state').html('');
+				$('#state').append('<option value="">--state--</option>');
+				$('#city').html('');
+				$('#city').append('<option value="">--city--</option>');
+			} else {
+				for(var dd in object) {
+					if (object[dd].key == $('#continent').val()) {
+						for(var dc in object[dd].country) {
+							$('#country').append('<option value="' + object[dd].country[dc].key + '">' + object[dd].country[dc].name + '</option>');
+						}
+					}
+				}
+			}
+		});
+
+		$('#country').change(function(){
+
+			$('#state').html('');
+			$('#state').append('<option value="">--state--</option>');
+
+			if ($('#country').val() == '') {
+				$('#city').html('');
+				$('#city').append('<option value="">--city--</option>');
+			} else {
+				for(var dd in object) {
+					for(var dc in object[dd].country) {
+						if (object[dd].country[dc].key == $('#country').val()) {
+							for(var ab in object[dd].country[dc].states) {
+								$('#state').append('<option value="' + object[dd].country[dc].states[ab].key + '">' + object[dd].country[dc].states[ab].name + '</option>');
+							}
+						}
+					}
+				}
+			}
+		});
+
+		$('#state').change(function(){
+			$('#city').html('');
+			$('#city').append('<option value="">--city--</option>');
+			for(var dd in object) {
+				for(var dc in object[dd].country) {
+					for(var ab in object[dd].country[dc].states) {
+						if (object[dd].country[dc].states[ab].key == $('#state').val()) {
+							for(var ct in object[dd].country[dc].states[ab].city) {
+								$('#city').append('<option value="' + object[dd].country[dc].states[ab].city[ct].key + '">' + object[dd].country[dc].states[ab].city[ct].name + '</option>');	
+							}
+						}	
+					}
+				}
+			}
+		});
+
+		// --
+		// add student data into select box
+
+		var setupData = function(data) {
+			for(var ke in data) {
+				$('#continent').append('<option value="' + data[ke].key + '">' + data[ke].name + '</option>');
+			}
+		}
+
+		$.ajax({
+			url: "/data/continent.json",
+			dataType: 'json',
+			success:function(data){
+				object = data;
+				setupData(data)
+			},
+			error: function (error) {
+                console.log(error);
+            }
+		});
+
+		$('#gradeForm').submit(function(){
+
+			var actionUrl = "/api/v0.1/grade-post";
+			if ($('#grade-edit').val() !== '') {
+				actionUrl = "/api/v0.1/grade/update";
+			};
+
+			var postData = $(this).serialize();
+
+			$.ajax({
+				url: actionUrl,
+				type: "POST",
+				data: postData,
+				success:function(data){
+					$('#grade-model').modal('hide');
+					$('#studentList').change();
+				},
+				error: function (error) {
+	                console.log(error);
+	            }
+			});	
+			return false;
+		});
+	});
 }
 
 </script>

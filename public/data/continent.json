@@ -1,39 +1,27 @@
-[{
-	"name": "A",
-	"key": "A",
+[{	"name": "Asia",
+	"key": "aisa",
 	"country": [{
-		"name": "A1",
-		"key": "A1",
+		"name": "India",
+		"key": "india",
 		"states": [{
-			"name": "A11",
-			"key": "A11",
+			"name": "Gujarat",
+			"key": "gujarat",
 			"city": [{
-				"name": "A111",
-				"key": "A111",
-			}, {
-				"name": "A111-1",
-				"key": "A111-1",
-			}, {
-				"name": "A111-2",
-				"key": "A111-2",
+				"name": "Rajkot",
+				"key": "rajkot"
+			},{
+				"name": "Ahmedabad",
+				"key": "ahmedabad"
 			}]
-		}]
-	}, {
-		"name": "A1",
-		"key": "A1",
-		"states": [{
-			"name": "A11",
-			"key": "A11",
+		},{
+			"name": "Maharastra",
+			"key": "maharastra",
 			"city": [{
-				"name": "A111",
-				"key": "A111",
-			}]
-		}, {
-			"name": "A11",
-			"key": "A11",
-			"city": [{
-				"name": "A111",
-				"key": "A111",
+				"name": "Mumbai",
+				"key": "mumbai"
+			}, {
+				"name": "Pune",
+				"key": "pune"
 			}]
 		}]
 	}]

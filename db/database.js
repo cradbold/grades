@@ -27,6 +27,7 @@ var UserSchema = new mongoose.Schema({
 });
 
 var GradeSchema = new mongoose.Schema({
+	name: { type: String, required: true },
 	date: { type: String, required: true },
 	type: { type: String, required: true },
 	continent: { type: String, required: true },
@@ -63,3 +64,4 @@ UserSchema.methods.comparePassword = function(candidatePassword, callback) {
 
 // models
 exports.UserModel = mongoose.model('users', UserSchema);
+exports.GradeModel = mongoose.model('grades', GradeSchema);
