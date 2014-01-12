@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<% include header %>
+</head>
+<body>
+	<% include navbar %>
+	<div class="container" id="js-profile-cn"></div>    
+    <script id="js-profile-bc" type="text/template">
+        <h1>Profile</h1>
+		<form role="form" id="profileForm" method="post" action="/profile" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="firstName">Firstname</label>
+				<input type="text" class="form-control" name="firstName" value="{{firstName}}" id="firstName" placeholder="Enter Firstname" required>
+				<input type="hidden" value="{{_id}}" name="userId">
+			</div>
+			<div class="form-group">
+				<label for="lastName">Lastname</label>
+				<input type="text" class="form-control" name="lastName" value="{{lastName}}" id="lastName" placeholder="Enter Lastname" required>
+			</div>
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" class="form-control" name="username" value="{{username}}" id="username" placeholder="Enter Username" required>
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="text" class="form-control" name="email" value="{{email}}" id="email" placeholder="Enter Email" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" class="form-control" name="password" id="password" required>
+			</div>			
+			<div class="form-group">
+				<label for="Address">Address</label>
+				<textarea name="address" id="address" rows="5" class="form-control">{{address}}</textarea>
+			</div>
+			<div class="form-group">
+				<label for="photo">Photo</label>
+				<input type="file" id="photo" name="photo">
+				<img src="/img/uploads/{{photo}}" alt="" class="img img-responsive img-rounded" style="width:100px;margin:10px 0px;">
+			</div>		
+
+			<% if(user.owner == 'true' || user.tutor) { %>				
+			<div>
+				<label for="">Credit card information</label>
+				<br>
+				<button type="button" class="btn btn-default js-cc-edit">Edit</button>
+			</div>
+			<br>
+			<% } %>
+			
+			<% if(user.owner == 'true') { %>
+			<div id="student_list" >
+				<h4 class="well">Invited Students</h4>				
+			</div>
+			<br>
+			<% } %>
+
+			<% if(user.student && ownerNm) { %>
+			<div>
+				<strong> Owner : </strong> <%- ownerNm %>
+			</div>
+			<br>
+			<% } %>
+
+			<div class="form-actions">
+				<button type="button" class="btn btn-default">Close</button>
+				<input type="submit" name="submit" value="Update Profile" class="btn btn-primary btn-submit">
+			</div>
+		</form>
+
+    </script>
+
+	<!-- Grade Create Model -->
+
+	<% if(user.owner == 'true' || user.tutor) { %>
+
+		<script id="js-cc-bc" type="text/template">
+			<div class='cc-row well'>
+				<button class="close remove-cc" type="button" style="margin-right: -15px;margin-top: -16px;">×</button>
+				<div class="form-group">
+					<label for="name">Name</label>					
+					<input type="text" class="form-control" value="{{name}}" name="name[]" id="name" placeholder="Enter Name" required>
+				</div>
+				<div class="form-group">
+					<label for="type">Type</label>
+					<input type="text" class="form-control" value="{{type}}" name="type[]" id="type" placeholder="Enter Type" required>
+				</div>
+				<div class="form-group">
+					<label for="number">Number</label>
+					<input type="text" class="form-control" value="{{number}}" name="number[]" id="number" placeholder="Enter Number" required>
+				</div>
+				<div class="form-group">
+					<label for="address">Address</label>
+					<input type="text" class="form-control" value="{{address}}" name="address[]" id="address" placeholder="Enter Address" required>
+				</div>
+				<hr>
+			</div>		
+		</script>
+	
+		<div class="modal fade" id="cc-model">
+			<form role="form" id="ccForm" action="#">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title">Credit card information</h4>
+						</div>
+						<div class="modal-body">
+							<div id='js-cc-cn'>
+								
+							</div>
+							<button id="js-add-cc-fields" class="btn btn-info pull-right"> Add CC</button>
+							<div>
+								<i style="font-size:10px">(When you click on Save button it will auto save your changes)</i style="font-size:10px">
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<input type="submit" name="submit" value="Save" class="btn btn-primary btn-submit">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+	<% } %>	
+
+	
+
+	<script type="text/javascript">
+
+		window.onload = function() {
+			
+			require(['jQuery', 'bootstrap', 'Backbone', 'Underscore'], function($, bt, Backbone, _) {
+
+				// --
+				// Overwrite _.template parse rule.
+				_.templateSettings = {
+				  	interpolate : /\{\{(.+?)\}\}/g
+				};
+
+				// --
+				// Profile Form view
+
+			    var profileView = Backbone.View.extend({
+			        tagName: "div",
+			        className: "contact-container",
+			        template: _.template($("#js-profile-bc").html()),
+			        render: function () {
+
+			        	var userD = <%- JSON.stringify(user)  %>;
+
+			        	if(!userD.photo) {
+			        		userD.photo = 'default.png';
+			        	}
+
+			        	userD['student_list'] = <%- JSON.stringify(student)  %>
+			            this.$el.html(this.template(userD));
+			        	
+			        	userD['student_list'].forEach(function(row) {
+							this.$('#student_list').append('<h5>' + row.firstName + ' ' + row.lastName + '</h5><hr style="height:1px;padding:0px;margin:0;">');
+						}, this);		        	
+
+			            return this;
+			        }
+			    });
+
+	            var _profileView = new profileView();
+	            $("#js-profile-cn").html(_profileView.render().$el.html());
+
+	            // --
+	            // Credit Card form
+
+	            <% if(user.owner == 'true' || user.tutor) { %>
+
+		            $('body').on('click', '.js-cc-edit', function() {
+		        		$("#cc-model").modal('show');
+					});
+
+					// -
+					// CC field view
+
+					var ccFieldView = Backbone.View.extend({
+				        tagName: "div",
+				        className: "cc-container",
+				        template: _.template($("#js-cc-bc").html()),
+				        render: function (qs) {
+				        	var _default = qs || { name: '', number: '', address: '', type: '' };			        	
+				        	this.$el.html(this.template(_default));
+				            return this;
+				        }
+				    });
+
+					// -
+				    // Add another CC field
+
+		            $('#js-add-cc-fields').click(function() {
+		            	var _ccFieldView = new ccFieldView();
+		            	$("#js-cc-cn").append(_ccFieldView.render().$el);
+	        			return false;
+					});
+
+					// -
+					// Render CC details
+
+		            <% if(user.creditCards) { %>
+		            	var ccDetails = <%- JSON.stringify(user.creditCards)  %>;
+		            	for(var ccRow in ccDetails) {	            		
+		            		var _ccFieldView = new ccFieldView();
+		            		$("#js-cc-cn").append(_ccFieldView.render(ccDetails[ccRow]).$el);
+		            	}
+		            <% } %>
+
+						
+					// -
+					// Save CC data
+
+					$("#ccForm").submit(function() {
+	        			$.ajax({
+							url: "/api/v0.1/profile/cc",
+						 	type: "POST",
+							data: $(this).serialize(),
+							success:function(data) {
+								$("#cc-model").modal('hide');
+							},
+							error: function (error) {
+				                console.log(error);
+				            }
+						});
+						return false;
+	        		});
+
+					// -
+					// Remove CC Box
+
+				  	$('.remove-cc').on('click', '.js-cc-edit', function() {
+		        		$(this).parents('.cc-row').remove();
+	        			return false;
+					});
+
+        		<% } %>
+
+       		});
+		}
+
+	</script>
+</body>
+<% include footer %>
+</html>

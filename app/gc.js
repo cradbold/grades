@@ -5,9 +5,12 @@ var path = require('path'); // file path utilities
 var gc = express();
 var server = require('http').createServer(gc);
 var io = require('socket.io').listen(server);
+var flashify = require('flashify');
+
 gc.passport = require('passport');
 gc.auth = require('../config/auth');
 gc.db = require('../db/database');
+
 
 // configure
 gc.configure(function() {
@@ -20,6 +23,7 @@ gc.configure(function() {
     gc.use(express.session({ secret: 'snicker' }));
     gc.use(gc.passport.initialize());
     gc.use(gc.passport.session());
+    gc.use(flashify);
     gc.use(gc.router); // perform route lookup based on url and HTTP method
     gc.use(express.errorHandler({ dumpExceptions: true, showStack: true })); // show all errors in development
     gc.use(express.static(path.join(gcRootDir, '../public'))); // where to serve static content

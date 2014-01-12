@@ -1,0 +1,28 @@
+[{	"name": "Asia",
+	"key": "aisa",
+	"country": [{
+		"name": "India",
+		"key": "india",
+		"states": [{
+			"name": "Gujarat",
+			"key": "gujarat",
+			"city": [{
+				"name": "Rajkot",
+				"key": "rajkot"
+			},{
+				"name": "Ahmedabad",
+				"key": "ahmedabad"
+			}]
+		},{
+			"name": "Maharastra",
+			"key": "maharastra",
+			"city": [{
+				"name": "Mumbai",
+				"key": "mumbai"
+			}, {
+				"name": "Pune",
+				"key": "pune"
+			}]
+		}]
+	}]
+}]

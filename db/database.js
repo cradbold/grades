@@ -21,11 +21,43 @@ var UserSchema = new mongoose.Schema({
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true},
 	student: { type: Boolean, required: true },
-	tutor: { type: Boolean, required: true }
+	tutor: { type: Boolean, required: true },
+	address: { type: String },
+	photo: { type: String },
+	tutorStudents: [],
+	grades: [], 
+	owner: { type: String },
+	creditCards: []
+});
+
+var GradeSchema = new mongoose.Schema({
+	name: { type: String, required: true },
+	date: { type: String, required: true },
+	type: { type: String, required: true },
+	continent: { type: String, required: true },
+	country: { type: String, required: true },
+	state: { type: String, required: true },
+	city: { type: String, required: true },
 });
 
  //bcrypt
 UserSchema.pre('save', function(next) {
+	var user = this;
+	if (!user.isModified('password'))
+		return next();
+	bcrypt.genSalt(SALT_ROUNDS, function(err, salt) {
+		if (err)
+			return next(err);
+		bcrypt.hash(user.password, salt, function(err, hash) {
+			if (err)
+				return next(err);
+			user.password = hash;
+			next();
+		});
+	});
+});
+
+UserSchema.pre('update', function(next) {
 	var user = this;
 	if (!user.isModified('password'))
 		return next();
@@ -52,3 +84,4 @@ UserSchema.methods.comparePassword = function(candidatePassword, callback) {
 
 // models
 exports.UserModel = mongoose.model('users', UserSchema);
+exports.GradeModel = mongoose.model('grades', GradeSchema);

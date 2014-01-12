@@ -21,21 +21,38 @@ module.exports = function(grunt) {
 	});
 	
 	grunt.registerTask('dbseed', 'seed the database', function() {
-//		grunt.task.run('dbdrop');
-		grunt.task.run('adduser:Conrad:Warmbold:conrad:cradbold@gmail.com:conrad:true:true:false:false');
-		grunt.task.run('adduser:Jayesh:B:jayesh:jayesh@ymail.com:jayesh:false:false:false:true');
+		// grunt.task.run('dbdrop');
+
+		// Students
+		grunt.task.run('adduser:52ce4495abc7318e0e000001:First-1:Last1:stud_unm1:stud1@gmail.com:stud_pwd1:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000002:First-2:Last2:stud_unm2:stud2@gmail.com:stud_pwd2:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000003:First-3:Last3:stud_unm3:stud3@gmail.com:stud_pwd3:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000004:First-4:Last4:stud_unm4:stud4@gmail.com:stud_pwd4:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000005:First-5:Last5:stud_unm5:stud5@gmail.com:stud_pwd5:true:false:[]:52ce4495abc7318e0e000007');
+
+		// Teachers
+		grunt.task.run('adduser:52ce4495abc7318e0e000006:Conrad:Warmbold:conrad:cradbold@gmail.com:conrad:false:true:["52ce4495abc7318e0e000001","52ce4495abc7318e0e000002","52ce4495abc7318e0e000003","52ce4495abc7318e0e000004","52ce4495abc7318e0e000005"]:false');		
+
+		// Owner
+		grunt.task.run('adduser:52ce4495abc7318e0e000007:Conrad:Warmbold:conrad1:cradbold1@gmail.com:conrad:false:false:[]:true');		
 	});
 
-	grunt.registerTask('adduser', 'add a user to the database', function(firstName, lastName, username,
-			email, password, student, tutor) {
+	grunt.registerTask('adduser', 'add a user to the database', function(_id, firstName, lastName, username, email, password, student, tutor, tutorStudents, owner) {
+		
 		var user = new db.UserModel({
+			_id: _id,
 			firstName: firstName,
 			lastName: lastName,
 			username: username,
 			email: email,
 			password: password,
 			student: (student === "true"),
-			tutor: (tutor === "true")
+			tutor: (tutor === "true"),
+			tutorStudents: JSON.parse(tutorStudents),
+			owner: owner,
+			address:'',
+			photo:'',
+			creditCards:''
 		});
 
 		// save call is async, put grunt into async mode to work
