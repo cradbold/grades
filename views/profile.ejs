@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<% include header %>
+</head>
+<body>
+	<% include navbar %>
+	<div class="container" id="js-profile-cn"></div>    
+    <script id="js-profile-bc" type="text/template">
+        <h1>Profile</h1>
+		<form role="form" id="profileForm" method="post" action="/profile" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="firstName">Firstname</label>
+				<input type="text" class="form-control" name="firstName" value="{{firstName}}" id="firstName" placeholder="Enter Firstname" required>
+				<input type="hidden" value="{{_id}}" name="userId">
+			</div>
+			<div class="form-group">
+				<label for="lastName">Lastname</label>
+				<input type="text" class="form-control" name="lastName" value="{{lastName}}" id="lastName" placeholder="Enter Lastname" required>
+			</div>
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" class="form-control" name="username" value="{{username}}" id="username" placeholder="Enter Username" required>
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="text" class="form-control" name="email" value="{{email}}" id="email" placeholder="Enter Email" required>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" class="form-control" name="password" id="password" required>
+			</div>			
+			<div class="form-group">
+				<label for="Address">Address</label>
+				<textarea name="address" id="address" rows="5" class="form-control">{{address}}</textarea>
+			</div>
+			<div class="form-group">
+				<label for="photo">Photo</label>
+				<input type="file" id="photo" name="photo">			
+			</div>		
+
+			<% if(user.owner == 'true' || user.tutor) { %>				
+			<div>
+				<label for="">Credit card information</label>
+				<br>
+				<button type="button" class="btn btn-default">Edit</button>
+			</div>
+			<br>
+			<% } %>
+			
+			<% if(user.owner == 'true') { %>
+			<div id="student_list">
+				<label for="">Student List</label>				
+			</div>
+			<br>
+			<% } %>
+
+			<% if(user.student) { %>
+			<div>
+				<label for="">Owner</label> &nbsp;
+				<label for="">Owner</label>
+			</div>
+			<br>
+			<% } %>
+
+			<button type="button" class="btn btn-default">Close</button>
+			<input type="submit" name="submit" value="Update Profile" class="btn btn-primary btn-submit">
+		</form>
+    </script>
+
+	<script type="text/javascript">
+
+		window.onload = function() {
+			
+			require(['jQuery', 'bootstrap', 'Backbone', 'Underscore'], function($, bt, Backbone, _) {
+
+				_.templateSettings = {
+				  	interpolate : /\{\{(.+?)\}\}/g
+				};
+
+				// define individual contact view
+			    var ContactView = Backbone.View.extend({
+			        tagName: "article",
+			        className: "contact-container",
+			        template: _.template($("#js-profile-bc").html()),
+			        render: function () {
+
+			        	var userD = <%- JSON.stringify(user)  %>;
+			        	userD['student_list'] = <%- JSON.stringify(student)  %>
+			            this.$el.html(this.template(userD));
+			        	
+			        	userD['student_list'].forEach(function(row) {
+							this.$('#student_list').append('<h4>' + row.firstName + ' ' + row.lastName + '</h4><hr>');
+						}, this);
+
+			            return this;
+			        }
+			    });
+
+	            var _contactView = new ContactView();
+	            $("#js-profile-cn").html(_contactView.render().$el.html());
+
+       		});
+		}
+
+        // events: {
+        //     "click button.delete": "deleteContact",
+        //     "click button.edit": "editContact",
+        //     "change select.type": "addType",
+        //     "click button.save": "saveEdits",
+        //     "click button.cancel": "cancelEdit"
+        // },
+
+        // //delete a contact
+        // deleteContact: function () {
+        //     var removedType = this.model.get("type").toLowerCase();
+
+        //     //remove model
+        //     this.model.destroy();
+
+        //     //remove view from page
+        //     this.remove();
+
+        //     //re-render select if no more of deleted type
+        //     if (_.indexOf(directory.getTypes(), removedType) === -1) {
+        //         directory.$el.find("#filter select").children("[value='" + removedType + "']").remove();
+        //     }
+        // },
+
+        // //switch contact to edit mode
+        // editContact: function () {
+        //     this.$el.html(this.editTemplate(this.model.toJSON()));
+
+        //     //add select to set type
+        //     var newOpt = $("<option/>", {
+        //         html: "<em>Add new...</em>",
+        //         value: "addType"
+        //     });
+
+        //     this.select = directory.createSelect().addClass("type").val(this.$el.find("#type").val()).append(newOpt).insertAfter(this.$el.find(".name"));
+        //     this.$el.find("input[type='hidden']").remove();
+        // },
+
+        // addType: function () {
+        //     if (this.select.val() === "addType") {
+
+        //         this.select.remove();
+
+        //         $("<input />", {
+        //             "class": "type"
+        //         }).insertAfter(this.$el.find(".name")).focus();
+        //     }
+        // },
+
+        // saveEdits: function (e) {
+        //     e.preventDefault();
+
+        //     var formData = {},
+        //         prev = this.model.previousAttributes();
+
+        //     //get form data
+        //     $(e.target).closest("form").find(":input").not("button").each(function () {
+        //         var el = $(this);
+        //         formData[el.attr("class")] = el.val();
+        //     });
+
+        //     //use default photo if none supplied
+        //     if (formData.photo === "") {
+        //         delete formData.photo;
+        //     }
+
+        //     //update model
+        //     this.model.set(formData);
+
+        //     //render view
+        //     this.render();
+
+        //     //if model acquired default photo property, remove it
+        //     if (prev.photo === "/img/placeholder.png") {
+        //         delete prev.photo;
+        //          delete prev.photo;
+        //     }
+
+        //     //update contacts array
+        //     _.each(contacts, function (contact) {
+        //         if (_.isEqual(contact, prev)) {
+        //             contacts.splice(_.indexOf(contacts, contact), 1, formData);
+        //         }
+        //     });
+        // },
+
+        // cancelEdit: function () {
+        //     this.render();
+        // }        }
+
+        //     //update contacts array
+        //     _.each(contacts, function (contact) {
+        //         if (_.isEqual(contact, prev)) {
+        //             contacts.splice(_.indexOf(contacts, contact), 1, formData);
+        //         }
+        //     });
+        // },
+
+        // cancelEdit: function () {
+        //     this.render();
+        // }
+    // });
+
+
+		// 	});
+		// }
+
+	</script>
+</body>
+<% include footer %>
+</html>

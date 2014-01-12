@@ -365,4 +365,9 @@ module.exports = function(gc) {
 		});
 	});
 
+
+	// gc.get('/get-user', function(req, res) {
+	// 	res.json(req.user);
+	// });
+
 };

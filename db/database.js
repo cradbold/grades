@@ -22,8 +22,12 @@ var UserSchema = new mongoose.Schema({
 	password: { type: String, required: true},
 	student: { type: Boolean, required: true },
 	tutor: { type: Boolean, required: true },
+	address: { type: String },
+	photo: { type: String },
 	tutorStudents: [],
 	grades: [], 
+	owner: { type: String },
+	creditCards: []
 });
 
 var GradeSchema = new mongoose.Schema({
@@ -38,6 +42,22 @@ var GradeSchema = new mongoose.Schema({
 
  //bcrypt
 UserSchema.pre('save', function(next) {
+	var user = this;
+	if (!user.isModified('password'))
+		return next();
+	bcrypt.genSalt(SALT_ROUNDS, function(err, salt) {
+		if (err)
+			return next(err);
+		bcrypt.hash(user.password, salt, function(err, hash) {
+			if (err)
+				return next(err);
+			user.password = hash;
+			next();
+		});
+	});
+});
+
+UserSchema.pre('update', function(next) {
 	var user = this;
 	if (!user.isModified('password'))
 		return next();
