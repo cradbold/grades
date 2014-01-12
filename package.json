@@ -12,7 +12,8 @@
     "passport-local": "~0.1.6",
     "socket.io": "~0.9.16",
     "flashify": "~0.1.2",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "async": "~0.2.9"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

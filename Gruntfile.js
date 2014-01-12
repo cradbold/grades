@@ -24,11 +24,11 @@ module.exports = function(grunt) {
 		// grunt.task.run('dbdrop');
 
 		// Students
-		grunt.task.run('adduser:52ce4495abc7318e0e000001:stud_first1:stud_last1:stud_unm1:stud1@gmail.com:stud_pwd1:true:false:[]:52ce4495abc7318e0e000007');
-		grunt.task.run('adduser:52ce4495abc7318e0e000002:stud_first2:stud_last2:stud_unm2:stud2@gmail.com:stud_pwd2:true:false:[]:52ce4495abc7318e0e000007');
-		grunt.task.run('adduser:52ce4495abc7318e0e000003:stud_first3:stud_last3:stud_unm3:stud3@gmail.com:stud_pwd3:true:false:[]:52ce4495abc7318e0e000007');
-		grunt.task.run('adduser:52ce4495abc7318e0e000004:stud_first4:stud_last4:stud_unm4:stud4@gmail.com:stud_pwd4:true:false:[]:52ce4495abc7318e0e000007');
-		grunt.task.run('adduser:52ce4495abc7318e0e000005:stud_first5:stud_last5:stud_unm5:stud5@gmail.com:stud_pwd5:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000001:First-1:Last1:stud_unm1:stud1@gmail.com:stud_pwd1:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000002:First-2:Last2:stud_unm2:stud2@gmail.com:stud_pwd2:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000003:First-3:Last3:stud_unm3:stud3@gmail.com:stud_pwd3:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000004:First-4:Last4:stud_unm4:stud4@gmail.com:stud_pwd4:true:false:[]:52ce4495abc7318e0e000007');
+		grunt.task.run('adduser:52ce4495abc7318e0e000005:First-5:Last5:stud_unm5:stud5@gmail.com:stud_pwd5:true:false:[]:52ce4495abc7318e0e000007');
 
 		// Teachers
 		grunt.task.run('adduser:52ce4495abc7318e0e000006:Conrad:Warmbold:conrad:cradbold@gmail.com:conrad:false:true:["52ce4495abc7318e0e000001","52ce4495abc7318e0e000002","52ce4495abc7318e0e000003","52ce4495abc7318e0e000004","52ce4495abc7318e0e000005"]:false');		

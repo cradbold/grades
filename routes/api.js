@@ -130,12 +130,12 @@ module.exports = function(gc) {
 	});
 
 
-
+	// ---------------------------------------------------
+	// Grade
 	// ---------------------------------------------------
 
-	/**
-	 * Grade feature
-	 */
+	// --
+	// Get teacher's students
 
 	gc.get(prefix + '/getStudents', function(req, res) {
 		if (!req.user) {
@@ -188,56 +188,8 @@ module.exports = function(gc) {
 		});
 	});
 
-	gc.get(prefix + '/getStudents', function(req, res) {
-		if (!req.user) {
-			res.send([]);
-			return;
-		}
-		var getUser = function(cb) {
-			var userId = req.user['_id'];
-			db.UserModel.find({
-				_id: userId
-			}).exec(function(err, data) {
-				if (err) {
-					console.log(err);
-				}
-				cb(null, data);
-			});
-		}
-		var getStudents = function(data, cb) {
-
-			db.UserModel.find({
-				_id: {
-					$in: data[0].tutorStudents
-				}
-			}, {
-				_id: true,
-				firstName: true,
-				lastName: true,
-			}).exec(function(err, sData) {
-				if (err) {
-					console.log(err);
-				}
-
-				var studData = [];
-
-				for (var ke in sData) {
-					studData[studData.length] = {
-						_id: sData[ke]._id,
-						name: sData[ke].firstName + ' ' + sData[ke].lastName,
-					}
-				}
-				res.json(studData);
-			});
-
-		}
-
-		getUser(function(err, data) {
-			getStudents(data, function(err, data) {
-				res.json(data);
-			});
-		});
-	});
+	// --
+	// save Grade
 
 	gc.post(prefix + '/grade-post', function(req, res) {
 
@@ -260,7 +212,6 @@ module.exports = function(gc) {
 				db.UserModel.find({
 					_id: req.body.studentID
 				}).exec(function(err, user) {
-
 
 					var existsGarde = []
 
@@ -286,6 +237,9 @@ module.exports = function(gc) {
 		});
 	});
 
+	// --
+	// Get grade base on student
+
 	gc.get(prefix + '/get-student-grade', function(req, res) {
 
 		db.UserModel.find({
@@ -302,6 +256,9 @@ module.exports = function(gc) {
 
 		});
 	});
+
+	// --
+	// Delete grade	
 
 	gc.get(prefix + '/grade/:studId/delete/:id', function(req, res) {
 		db.GradeModel.remove({
@@ -337,6 +294,9 @@ module.exports = function(gc) {
 		});
 	});
 
+	// --
+	// Get specific grade record for edit action
+
 	gc.get(prefix + '/grade/:id/edit', function(req, res) {
 		db.GradeModel.find({
 			_id: req.params.id
@@ -344,6 +304,9 @@ module.exports = function(gc) {
 			res.send(data);
 		});
 	});
+
+	// --
+	// Update a grade
 
 	gc.post(prefix + '/grade/update', function(req, res) {
 		var gradeData = {
@@ -365,6 +328,48 @@ module.exports = function(gc) {
 		});
 	});
 
+	// ---------------------------------------------------
+	// Profile
+	// ---------------------------------------------------	
+
+
+	// --
+	// Get credit card details
+
+	gc.get(prefix + '/profile/cc', function(req, res) {
+
+	});
+
+	// --
+	// Update credit card details
+
+	gc.post(prefix + '/profile/cc', function(req, res) {
+
+		var cc = [];
+
+		// 
+
+		for (var row in req.body.name) {
+			cc.push({
+				name: req.body.name[row],
+				number: req.body.number[row],
+				address: req.body.address[row],
+				type: req.body.type[row]
+			});
+		}
+
+		db.UserModel.update({
+			_id: req.user._id
+		}, {
+			creditCards: cc
+		}).exec(function(err, done) {
+			if (err) {
+				res.send(err);
+			} else {
+				res.send("success");
+			}
+		});
+	});
 
 	// gc.get('/get-user', function(req, res) {
 	// 	res.json(req.user);
