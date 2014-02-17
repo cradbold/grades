@@ -22,15 +22,18 @@ require.config({
 		'Handlebars': {
 			deps: ['handlebars'],
 			exports: 'Handlebars'
-		}
+		},
+		'bootstrap' :{
+			deps: ['Underscore', 'jQuery'],
+		},
 	},
 
 	paths: {
-		jQuery: '//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min',
+		jQuery: '//code.jquery.com/jquery-1.10.2.min',
 		Underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min',
-		underscore: './lib/underscore',
+		underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min',
 		Backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.0/backbone-min',
-		handlebars: './lib/Handlebars',
+		handlebars: '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.amd',
 		hbs: './lib/hbs',
 		i18nprecompile: './lib/i18nprecompile',
 		json2: './lib/json2',

@@ -1,3 +1,5 @@
+var mongoose = require('mongoose');
+
 module.exports = function(gc) {
 
 	var api = "/api";
@@ -155,9 +157,20 @@ module.exports = function(gc) {
 		}
 		var getStudents = function(data, cb) {
 
+			var ObjectVars = [];
+
+			if (data[0].tutorStudents.length > 0) {
+				var userIds = data[0].tutorStudents;
+				if (userIds.length !== 0) {
+					for (var i = 0; i < userIds.length ; i ++) {
+						ObjectVars.push(mongoose.Types.ObjectId(userIds[i]));						
+					}
+				}
+			}
+
 			db.UserModel.find({
 				_id: {
-					$in: data[0].tutorStudents
+					$in: ObjectVars
 				}
 			}, {
 				_id: true,
