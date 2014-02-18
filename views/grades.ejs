@@ -105,276 +105,279 @@
 var object = [];
 
 window.onload = function() {
-	
-	require(['jQuery', 'bootstrap', 'Backbone'], function($, bt, Backbone) { 
 
+	setTimeout(function() {
 
-		// --
-		// Grade list
+		require(['jQuery', 'bootstrap', 'Backbone'], function($, bt, Backbone) { 
 
-		var studentGrade = Backbone.View.extend({
-			render: function() {
+			// --
+			// Grade list
 
-				var self = this;
-				this.$el = $('#stud-data-list').clone();
-				this.$el.html('');
-				this.collection.forEach(function(stud) {
-					self.$el.append('<h2 class="well">' + stud.get('name') + ' <button class="pull-right btn grade-delete" data-id="'+stud.get('_id') +'"><span class="glyphicon glyphicon-trash"></span></button> <span class="pull-right">&nbsp;</span><button class="pull-right btn grade-edit" data-id="'+stud.get('_id') +'"><span class="glyphicon glyphicon-pencil"></span></button></h2>');
-				}, this);
+			var studentGrade = Backbone.View.extend({
+				render: function() {
 
-				this.$('.grade-delete').bind({
-					click: function() {
-						var getid = $(this).attr('data-id');
-						var studId = $('#studentList').val();
-						var action = confirm("Are you sure want to delete it?");
-						if (action == true) {
+					var self = this;
+					this.$el = $('#stud-data-list').clone();
+					this.$el.html('');
+					this.collection.forEach(function(stud) {
+						self.$el.append('<h2 class="well">' + stud.get('name') + ' <button class="pull-right btn grade-delete" data-id="'+stud.get('_id') +'"><span class="glyphicon glyphicon-trash"></span></button> <span class="pull-right">&nbsp;</span><button class="pull-right btn grade-edit" data-id="'+stud.get('_id') +'"><span class="glyphicon glyphicon-pencil"></span></button></h2>');
+					}, this);
+
+					this.$('.grade-delete').bind({
+						click: function() {
+							var getid = $(this).attr('data-id');
+							var studId = $('#studentList').val();
+							var action = confirm("Are you sure want to delete it?");
+							if (action == true) {
+								$.ajax({
+									url: "/api/v0.1/grade/" + studId + "/delete/" + getid,
+									success:function(data){
+										console.log(data);
+										$('#studentList').change();
+									},
+									error: function (error) {
+						                console.log(error);
+						            }
+								});
+								return false;
+							} else {
+								
+							} 
+						}
+					});
+
+					this.$('.grade-edit').bind({
+						click: function() {
+							var getid = $(this).attr('data-id');
 							$.ajax({
-								url: "/api/v0.1/grade/" + studId + "/delete/" + getid,
+								url: "/api/v0.1/grade/" + getid + "/edit",
 								success:function(data){
-									console.log(data);
-									$('#studentList').change();
+									$('#grade-edit').val(data[0]._id);
+									$('#name').val(data[0].name);
+									$('#date').val(data[0].date);
+									$('#type').val(data[0].type);
+									$('#continent').val(data[0].continent);
+									$('#continent').change();
+									$('#country').val(data[0].country);
+									$('#country').change();
+									$('#state').val(data[0].state);
+									$('#state').change();
+									$('#city').val(data[0].city);
+									$('.btn-submit').val('Update Grade');
+									$('h4.modal-title').text('Update Grade');
+									$('#grade-model').modal('show');
 								},
 								error: function (error) {
 					                console.log(error);
 					            }
 							});
 							return false;
-						} else {
+						}
+					});
+
+					return this;
+				}
+			});		
+
+			var gradeView = Backbone.View.extend({
+
+				render: function() {
+
+					var s_gradeView = this;
+
+					this.$el = $('#js-grade-list');
+					this.collection.forEach(function(row) {
+						this.$('.js-student-list').append('<option value="' + row.get('_id') + '">' + row.get('name') + '</option>');
+					}, this);
+					this.$('.js-add-grade').bind({
+						click: function() {
+							$('#student_id').val($('#studentList').val());
+							$('#grade-edit').val('');
+							resetData();
+							$('.btn-submit').val('Add Grade');
+							$('h4.modal-title').text('Add Grade');
+							$('#grade-model').modal('show');
+						}
+					});
+
+					this.$('#studentList').bind({
+						change: function()  {
 							
-						} 
-					}
-				});
+							if ($(this).val() != '') {
 
-				this.$('.grade-edit').bind({
-					click: function() {
-						var getid = $(this).attr('data-id');
-						$.ajax({
-							url: "/api/v0.1/grade/" + getid + "/edit",
-							success:function(data){
-								$('#grade-edit').val(data[0]._id);
-								$('#name').val(data[0].name);
-								$('#date').val(data[0].date);
-								$('#type').val(data[0].type);
-								$('#continent').val(data[0].continent);
-								$('#continent').change();
-								$('#country').val(data[0].country);
-								$('#country').change();
-								$('#state').val(data[0].state);
-								$('#state').change();
-								$('#city').val(data[0].city);
-								$('.btn-submit').val('Update Grade');
-								$('h4.modal-title').text('Update Grade');
-								$('#grade-model').modal('show');
-							},
-							error: function (error) {
-				                console.log(error);
-				            }
-						});
-						return false;
-					}
-				});
+								$('.grade-add-cn').removeClass('hide');
 
-				return this;
-			}
-		});		
+								var gradeModel = Backbone.Model.extend({
+									urlRoot: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
+									url: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
+								});
 
-		var gradeView = Backbone.View.extend({
+								var studGradeCollection = Backbone.Collection.extend({
+							        url: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
+							        model : gradeModel,
+							        read:function() { }
+							    });
 
-			render: function() {
+								var _studGradeCollection = new studGradeCollection();
+								var _gradeView = null;
+								_studGradeCollection.fetch({
+									success: function(studentGradeD) {
+										_studentGrade = new studentGrade({ $el : $('#stud-data-list'), collection: studentGradeD});
+										s_gradeView.$('#grade-list').html('');
+										s_gradeView.$('#grade-list').append(_studentGrade.render().$el);
+									}
+								});
 
-				var s_gradeView = this;
-
-				this.$el = $('#js-grade-list');
-				this.collection.forEach(function(row) {
-					this.$('.js-student-list').append('<option value="' + row.get('_id') + '">' + row.get('name') + '</option>');
-				}, this);
-				this.$('.js-add-grade').bind({
-					click: function() {
-						$('#student_id').val($('#studentList').val());
-						$('#grade-edit').val('');
-						resetData();
-						$('.btn-submit').val('Add Grade');
-						$('h4.modal-title').text('Add Grade');
-						$('#grade-model').modal('show');
-					}
-				});
-
-				this.$('#studentList').bind({
-					change: function()  {
-						
-						if ($(this).val() != '') {
-
-							$('.grade-add-cn').removeClass('hide');
-
-							var gradeModel = Backbone.Model.extend({
-								urlRoot: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
-								url: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
-							});
-
-							var studGradeCollection = Backbone.Collection.extend({
-						        url: '/api/v0.1/get-student-grade?studId=' + $(this).val(),
-						        model : gradeModel,
-						        read:function() { }
-						    });
-
-							var _studGradeCollection = new studGradeCollection();
-							var _gradeView = null;
-							_studGradeCollection.fetch({
-								success: function(studentGradeD) {
-									_studentGrade = new studentGrade({ $el : $('#stud-data-list'), collection: studentGradeD});
-									s_gradeView.$('#grade-list').html('');
-									s_gradeView.$('#grade-list').append(_studentGrade.render().$el);
-								}
-							});
-
-						} else {
-							$('.grade-add-cn').addClass('hide');
-						}
-
-					}
-				});
-
-				return this;
-			}
-		});
-	
-		// --
-
-		var studentsModel = Backbone.Model.extend({
-			urlRoot: '/api/v0.1/getStudents',
-			url: '/api/v0.1/getStudents',
-		});
-
-	    var studentsCollection = Backbone.Collection.extend({
-	        url: '/api/v0.1/getStudents',        
-	        model : studentsModel,
-	        read:function() { }
-	    });
-
-	    var _studentsCollection = new studentsCollection();
-		var _gradeView = null;
-		_studentsCollection.fetch({
-			success: function(students) {
-				_gradeView = new gradeView({ $el : $('#js-grade-list'), collection: students});
-				_gradeView.render();
-			}
-		});
-
-		// reset form data
-
-		var resetData = function() {
-			$('#name').val('');
-			$('#date').val('');
-			$('#type').val('');
-			$('#continent').val('');
-			$('#country').val('');
-			$('#state').val('');
-			$('#city').val('');
-		};
-
-		$('body').on('change', '#continent', function () {
-
-			$('#country').html('');
-			$('#country').append('<option value="">--country--</option>');
-
-			if ($('#continent').val() == '') {
-				$('#state').html('');
-				$('#state').append('<option value="">--state--</option>');
-				$('#city').html('');
-				$('#city').append('<option value="">--city--</option>');
-			} else {
-				for(var dd in object) {
-					if (object[dd].key == $('#continent').val()) {
-						for(var dc in object[dd].country) {
-							$('#country').append('<option value="' + object[dd].country[dc].key + '">' + object[dd].country[dc].name + '</option>');
-						}
-					}
-				}
-			}
-		});
-
-		$('#country').change(function(){
-
-			$('#state').html('');
-			$('#state').append('<option value="">--state--</option>');
-
-			if ($('#country').val() == '') {
-				$('#city').html('');
-				$('#city').append('<option value="">--city--</option>');
-			} else {
-				for(var dd in object) {
-					for(var dc in object[dd].country) {
-						if (object[dd].country[dc].key == $('#country').val()) {
-							for(var ab in object[dd].country[dc].states) {
-								$('#state').append('<option value="' + object[dd].country[dc].states[ab].key + '">' + object[dd].country[dc].states[ab].name + '</option>');
+							} else {
+								$('.grade-add-cn').addClass('hide');
 							}
+
 						}
-					}
+					});
+
+					return this;
 				}
-			}
-		});
+			});
+		
+			// --
 
-		$('#state').change(function(){
-			$('#city').html('');
-			$('#city').append('<option value="">--city--</option>');
-			for(var dd in object) {
-				for(var dc in object[dd].country) {
-					for(var ab in object[dd].country[dc].states) {
-						if (object[dd].country[dc].states[ab].key == $('#state').val()) {
-							for(var ct in object[dd].country[dc].states[ab].city) {
-								$('#city').append('<option value="' + object[dd].country[dc].states[ab].city[ct].key + '">' + object[dd].country[dc].states[ab].city[ct].name + '</option>');	
-							}
-						}	
-					}
+			var studentsModel = Backbone.Model.extend({
+				urlRoot: '/api/v0.1/getStudents',
+				url: '/api/v0.1/getStudents',
+			});
+
+		    var studentsCollection = Backbone.Collection.extend({
+		        url: '/api/v0.1/getStudents',        
+		        model : studentsModel,
+		        read:function() { }
+		    });
+
+		    var _studentsCollection = new studentsCollection();
+			var _gradeView = null;
+			_studentsCollection.fetch({
+				success: function(students) {
+					_gradeView = new gradeView({ $el : $('#js-grade-list'), collection: students});
+					_gradeView.render();
 				}
-			}
-		});
+			});
 
-		// --
-		// add student data into select box
+			// reset form data
 
-		var setupData = function(data) {
-			for(var ke in data) {
-				$('#continent').append('<option value="' + data[ke].key + '">' + data[ke].name + '</option>');
-			}
-		}
-
-		$.ajax({
-			url: "/data/continent.json",
-			dataType: 'json',
-			success:function(data){
-				object = data;
-				setupData(data)
-			},
-			error: function (error) {
-                console.log(error);
-            }
-		});
-
-		$('#gradeForm').submit(function(){
-
-			var actionUrl = "/api/v0.1/grade-post";
-			if ($('#grade-edit').val() !== '') {
-				actionUrl = "/api/v0.1/grade/update";
+			var resetData = function() {
+				$('#name').val('');
+				$('#date').val('');
+				$('#type').val('');
+				$('#continent').val('');
+				$('#country').val('');
+				$('#state').val('');
+				$('#city').val('');
 			};
 
-			var postData = $(this).serialize();
+			$('body').on('change', '#continent', function () {
+
+				$('#country').html('');
+				$('#country').append('<option value="">--country--</option>');
+
+				if ($('#continent').val() == '') {
+					$('#state').html('');
+					$('#state').append('<option value="">--state--</option>');
+					$('#city').html('');
+					$('#city').append('<option value="">--city--</option>');
+				} else {
+					for(var dd in object) {
+						if (object[dd].key == $('#continent').val()) {
+							for(var dc in object[dd].country) {
+								$('#country').append('<option value="' + object[dd].country[dc].key + '">' + object[dd].country[dc].name + '</option>');
+							}
+						}
+					}
+				}
+			});
+
+			$('#country').change(function(){
+
+				$('#state').html('');
+				$('#state').append('<option value="">--state--</option>');
+
+				if ($('#country').val() == '') {
+					$('#city').html('');
+					$('#city').append('<option value="">--city--</option>');
+				} else {
+					for(var dd in object) {
+						for(var dc in object[dd].country) {
+							if (object[dd].country[dc].key == $('#country').val()) {
+								for(var ab in object[dd].country[dc].states) {
+									$('#state').append('<option value="' + object[dd].country[dc].states[ab].key + '">' + object[dd].country[dc].states[ab].name + '</option>');
+								}
+							}
+						}
+					}
+				}
+			});
+
+			$('#state').change(function(){
+				$('#city').html('');
+				$('#city').append('<option value="">--city--</option>');
+				for(var dd in object) {
+					for(var dc in object[dd].country) {
+						for(var ab in object[dd].country[dc].states) {
+							if (object[dd].country[dc].states[ab].key == $('#state').val()) {
+								for(var ct in object[dd].country[dc].states[ab].city) {
+									$('#city').append('<option value="' + object[dd].country[dc].states[ab].city[ct].key + '">' + object[dd].country[dc].states[ab].city[ct].name + '</option>');	
+								}
+							}	
+						}
+					}
+				}
+			});
+
+			// --
+			// add student data into select box
+
+			var setupData = function(data) {
+				for(var ke in data) {
+					$('#continent').append('<option value="' + data[ke].key + '">' + data[ke].name + '</option>');
+				}
+			}
 
 			$.ajax({
-				url: actionUrl,
-				type: "POST",
-				data: postData,
+				url: "/data/continent.json",
+				dataType: 'json',
 				success:function(data){
-					$('#grade-model').modal('hide');
-					$('#studentList').change();
+					object = data;
+					setupData(data)
 				},
 				error: function (error) {
 	                console.log(error);
 	            }
-			});	
-			return false;
+			});
+
+			$('#gradeForm').submit(function(){
+
+				var actionUrl = "/api/v0.1/grade-post";
+				if ($('#grade-edit').val() !== '') {
+					actionUrl = "/api/v0.1/grade/update";
+				};
+
+				var postData = $(this).serialize();
+
+				$.ajax({
+					url: actionUrl,
+					type: "POST",
+					data: postData,
+					success:function(data){
+						$('#grade-model').modal('hide');
+						$('#studentList').change();
+					},
+					error: function (error) {
+		                console.log(error);
+		            }
+				});	
+				return false;
+			});
 		});
-	});
+
+	}, 500);
 }
 
 </script>
