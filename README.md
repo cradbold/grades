@@ -1,5 +1,5 @@
-Iterations on previous features
-=======
+Iterations on previous tasks
+============================
 
 Information
 -----------
@@ -21,32 +21,27 @@ I haven't integrated your full grunt work yet... I plan on pulling parts of it o
 
 Summary
 -------
-For 
+This contract includes improvements made across the previous features located here:
+* [GRADES task](GRADES.md)
+* [PROFILE task](PROFILE.md)
+
+Note, I have made a commit to your existing code here so make it easier to integrate with my codebase:
+https://github.com/cradbold/grades/commit/d2889d748750c73c598ef52fb0d35f7a1b6d7979
+
+One of the new features I would like is invitation functionality where account owners invite students (accounts owners are parents; students are their children) to join the site.
+
+The second is a calendar feature that allows tutors and students to plan tutoring sessions in the future.
 
 Requirements
 ------------
-### Pages
-There should be only 1 page, but it will be different depending on the user type:
-1. Owner: should also include a credit card edit button; which upon selection would trigger 
-   a popup dialog where credit card information is stored; should also include a listing of 
-   invited students (if an invited student has not registered, a button should appear beside 
-   their listed email address to resend an invitation email; if the invited student has 
-   registered, the student's full name should appear instead of the email address)
-2. Student: should also include an owner field, which displays the name of owner user who
-   invited the student to register -- this field should not be editable
-3. Teacher: should include credit card information like that described for the owner user above
-
-### Actions
-1. Owner: should be able to edit all the information as described above as well as invite students 
-   to register for the site under the owner's account; this is performed by selecting 'Invite student'
-   button and entering an email address (for the student), which will trigger an email sent to that 
-   address with a link back to the site -- doesn't matter what the URL is right now; it's arbitrary.
-   Should also be able to resend that invitation email if a student has not registered yet. 
-2. Student: should be able to edit all the information as described above and additionally see the 
-   owner's name who invited them to register
-3. Teacher: should be able to edit all the information as described above
-
-### Models (incomplete suggestions)
-1. UserModel: {... owner: true, students: [user_id0, user_id1], creditCards: [{ name: String, type: String, number: String, address: String}, {...}]}
-2. UserModel: {... student: true, owner: user_id}
-3. UserModel: {... teacher: true, creditCards: [{ name: String, type: String, number: String, address: String}, {...}]}
+1) On the "Profile" page, if the user of of type 'owner', include an empty email textfield and an "Invite" button beside it.  By adding an email and clicking the "Invite" button, these actions occur:
+    a) An email is sent to the provided email address that includes a link to the 'index' page.
+    b) The email includes a username (=email address) and a random generated password.
+    c) The provided email address is added to an array of the 'owner' user, which should be called "students" (much like the existing "tutorStudents")
+    d) Use the nodemailer node.js library
+2) Add a new page called "Calendar".  It should contain a visual monthly calendar using the library of your choice.  The following functionality should exist there:
+    a) A user of type 'tutor' should see a calendar on their calendar page of the current month.  Each cell in the calendar has two states: available (green) or unavailable (red).  By default each cell is in the state 'unavailable' by default and it should be visualized with color.
+    b) By clicking a day calendar cell, you can switch the state of each day from unavailable to available, back and forth
+    c) Only the current month and the next 2 months are available to navigate.  Buttons should be available to navigate between the months.
+    d) The states of the day calendar cells should persist per tutor user.
+    e) A user of type 'owner' or 'student' sees the calendar as empty, not like 'tutors'.  Each cell can be clicked on.  When a student or owner clicks on the day calendar cell, a popup displays a list of all tutors that have marked themselves available for that day.
