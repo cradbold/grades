@@ -37,9 +37,9 @@ module.exports = function(gc) {
 		var student = [];
 		async.waterfall([
 			function(cb) {
-				if (req.user.owner == 'true') {
+				if (req.user.teacher == 'true') {
 					db.UserModel.find({
-						owner: req.user._id
+						teacher: req.user._id
 					}).exec(function(err, studData) {
 						student = studData;
 						cb(null);
@@ -51,9 +51,9 @@ module.exports = function(gc) {
 			},
 
 			function(cb) {
-				if (req.user.student && req.user.owner) {
+				if (req.user.student && req.user.teacher) {
 					db.UserModel.find({
-						_id: req.user.owner
+						_id: req.user.teacher
 					}, {
 						firstName: true,
 						lastName: true,
@@ -69,11 +69,11 @@ module.exports = function(gc) {
 				}
 			},
 
-			function(ownerNm, cb) {
+			function(teacherNm, cb) {
 				res.render('profile', {
 					user: req.user,
 					student: student,
-					ownerNm: ownerNm
+					teacherNm: teacherNm
 				});
 			}
 		]);

@@ -40,7 +40,7 @@
 				<img src="/img/uploads/{{photo}}" alt="" class="img img-responsive img-rounded" style="width:100px;margin:10px 0px;">
 			</div>		
 
-			<% if(user.owner == 'true' || user.tutor) { %>				
+			<% if(user.owner || user.tutor) { %>				
 			<div>
 				<label for="">Credit card information</label>
 				<br>
@@ -49,16 +49,16 @@
 			<br>
 			<% } %>
 			
-			<% if(user.owner == 'true') { %>
+			<% if(user.tutor) { %>
 			<div id="student_list" >
 				<h4 class="well">Invited Students</h4>				
 			</div>
 			<br>
 			<% } %>
 
-			<% if(user.student && ownerNm) { %>
+			<% if(user.student && teacherNm) { %>
 			<div>
-				<strong> Owner : </strong> <%- ownerNm %>
+				<strong> Teacher: </strong> <%- teacherNm %>
 			</div>
 			<br>
 			<% } %>
