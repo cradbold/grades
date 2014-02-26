@@ -21,9 +21,9 @@ gc.configure(function() {
     gc.use(express.bodyParser()); // parses request body and populates req.body
     gc.use(express.methodOverride()); // checks req.body for HTTP method overrides
     gc.use(express.session({ secret: 'snicker' }));
+    gc.use(flashify);
     gc.use(gc.passport.initialize());
     gc.use(gc.passport.session());
-    gc.use(flashify);
     gc.use(gc.router); // perform route lookup based on url and HTTP method
     gc.use(express.errorHandler({ dumpExceptions: true, showStack: true })); // show all errors in development
     gc.use(express.static(path.join(gcRootDir, '../public'))); // where to serve static content

@@ -34,17 +34,10 @@ module.exports = function(gc) {
 
 
 	var profile = function(req, res) {
-
 		var student = [];
-
 		async.waterfall([
-
-			// --
-			// Get student list
 			function(cb) {
-
 				if (req.user.owner == 'true') {
-
 					db.UserModel.find({
 						owner: req.user._id
 					}).exec(function(err, studData) {
@@ -57,42 +50,32 @@ module.exports = function(gc) {
 				}
 			},
 
-			// --
-			// Get owner name if user type student
 			function(cb) {
-
 				if (req.user.student && req.user.owner) {
-
 					db.UserModel.find({
 						_id: req.user.owner
 					}, {
 						firstName: true,
 						lastName: true,
 					}).exec(function(err, studData) {
-						
 						if (studData.length !== 0) {
 							cb(null, studData[0].firstName + ' ' + studData[0].lastName);
 						} else {
 							cb(null, studData[0].firstName + ' ' + studData[0].lastName);
 						}
 					});
-
 				} else {
 					cb(null);
 				}
 			},
 
-			// --
-			// Send HTML
 			function(ownerNm, cb) {
-
 				res.render('profile', {
 					user: req.user,
 					student: student,
 					ownerNm: ownerNm
 				});
 			}
-
 		]);
 	};
 
@@ -100,7 +83,6 @@ module.exports = function(gc) {
 	 * @todo need to setup server side validation
 	 */
 	var postProfile = function(req, res) {
-
 		var formData = {
 			firstName: req.body.firstName,
 			lastName: req.body.lastName,
@@ -109,16 +91,10 @@ module.exports = function(gc) {
 			password: req.body.password,
 			address: req.body.address
 		}
-
-		// --
-		// PhotoUpload
-
 		if (req.files.photo && req.files.photo.path) {
-
 			var fileName = uuid.v1();
 			var ext = req.files.photo.name.split('.');
 			ext = ext[ext.length - 1];
-
 			switch (req.files.photo.type) {
 				case 'image/png':
 					ext = 'png';
@@ -130,7 +106,6 @@ module.exports = function(gc) {
 					ext = 'gif';
 					break;
 			}
-
 			fileName += fileName + '.' + ext;
 			formData.photo = fileName;
 			fs.readFile(req.files.photo.path, function(err, data) {
@@ -139,17 +114,12 @@ module.exports = function(gc) {
 			});
 		}
 
-		// -- 
-		// Encrypt the password
-
 		var bcryptPassword = function(cb) {
 			bcrypt.genSalt(SALT_ROUNDS, function(err, salt) {
 				if (err) {
 					console.log(err);
 				}
-
 				bcrypt.hash(formData.password, salt, function(err, hash) {
-
 					if (err) {
 						console.log(err);
 					}
@@ -159,17 +129,12 @@ module.exports = function(gc) {
 			});
 		};
 
-		// --
-		// Finally update the data
-
 		var updateUser = function(cb) {
-
 			db.UserModel.update({
 					_id: req.body.userId
 				},
 				formData
 			).exec(function(err, user) {
-
 				if (err) {
 					console.log(err);
 					res.flash('error', 'Email address is already exists.');
@@ -178,19 +143,13 @@ module.exports = function(gc) {
 					res.flash('success', 'Profile settings has been succesfully updated.');
 					return res.redirect('/profile');
 				}
-
 			});
 		}
-
-		// --
 
 		bcryptPassword(function(cb) {
 			updateUser(function(cb) {});
 		});
 	};
-
-	// --
-	// Grade Page
 
 	var getGrades = function(req, res) {
 		res.render('grades', {
@@ -200,17 +159,11 @@ module.exports = function(gc) {
 		});
 	};
 
-	// --
-	// Logout
-
 	var getLogout = function(req, res) {
 		console.log('logging out...');
 		req.logout();
 		res.redirect('/index');
 	};
-
-	// --
-	// Routes
 
 	gc.get('/', getIndex);
 	gc.post('/', postIndex);
