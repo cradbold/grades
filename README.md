@@ -34,14 +34,14 @@ The second is a calendar feature that allows tutors and students to plan tutorin
 
 Requirements
 ------------
-1) On the "Profile" page, if the user of of type 'owner', include an empty email textfield and an "Invite" button beside it.  By adding an email and clicking the "Invite" button, these actions occur:
-    a) An email is sent to the provided email address that includes a link to the 'index' page.
-    b) The email includes a username (=email address) and a random generated password.
-    c) The provided email address is added to an array of the 'owner' user, which should be called "students" (much like the existing "tutorStudents")
-    d) Use the nodemailer node.js library
-2) Add a new page called "Calendar".  It should contain a visual monthly calendar using the library of your choice.  The following functionality should exist there:
-    a) A user of type 'tutor' should see a calendar on their calendar page of the current month.  Each cell in the calendar has two states: available (green) or unavailable (red).  By default each cell is in the state 'unavailable' by default and it should be visualized with color.
-    b) By clicking a day calendar cell, you can switch the state of each day from unavailable to available, back and forth
-    c) Only the current month and the next 2 months are available to navigate.  Buttons should be available to navigate between the months.
-    d) The states of the day calendar cells should persist per tutor user.
-    e) A user of type 'owner' or 'student' sees the calendar as empty, not like 'tutors'.  Each cell can be clicked on.  When a student or owner clicks on the day calendar cell, a popup displays a list of all tutors that have marked themselves available for that day.
+* On the "Profile" page, if the user of of type 'owner', include an empty email textfield and an "Invite" button beside it.  By adding an email and clicking the "Invite" button, these actions occur:
+  * An email is sent to the provided email address that includes a link to the 'index' page.
+  * The email includes a username (=email address) and a random generated password.
+  * The provided email address is added to an array of the 'owner' user, which should be called "students" (much like the existing "tutorStudents")
+  * Use the nodemailer node.js library
+* Add a new page called "Calendar".  It should contain a visual monthly calendar using the library of your choice.  The following functionality should exist there:
+  * A user of type 'tutor' should see a calendar on their calendar page of the current month.  Each cell in the calendar has two states: available (green) or unavailable (red).  By default each cell is in the state 'unavailable' by default and it should be visualized with color.
+  * By clicking a day calendar cell, you can switch the state of each day from unavailable to available, back and forth
+  * Only the current month and the next 2 months are available to navigate.  Buttons should be available to navigate between the months.
+  * The states of the day calendar cells should persist per tutor user.
+  * A user of type 'owner' or 'student' sees the calendar as empty, not like 'tutors'.  Each cell can be clicked on.  When a student or owner clicks on the day calendar cell, a popup displays a list of all tutors that have marked themselves available for that day.
